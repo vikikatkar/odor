@@ -12,12 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.MenuItem;
-import android.widget.TextView;
 
 
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,24 @@ public class MainActivity extends AppCompatActivity
 
         loadFragment(new HomeFragment());
 
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
+
+    private void updateUI(FirebaseUser currentUser){
+        if( null != currentUser){
+            String name = currentUser.getDisplayName();
+            Reporter.getInstance().setDisplayName(name);
+        }
+        //startActivity(new Intent(self, MapsActivity.class));
     }
 
     private boolean loadFragment(Fragment fragment){

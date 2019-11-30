@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +18,14 @@ public class DashboardFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dashboard,null);
+        View view = inflater.inflate(R.layout.fragment_dashboard,null);
+
+        String displayName = Reporter.getInstance().getDisplayName();
+        TextView mTextMessage;
+        mTextMessage = view.findViewById(R.id.message);
+        mTextMessage.setText(displayName==null? "Not yet signed in!": displayName);
+
+        return view;
     }
 
 }

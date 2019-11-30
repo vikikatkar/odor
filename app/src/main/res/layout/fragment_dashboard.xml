@@ -8,7 +8,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="Dashboard"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:id="@+id/message"/>
 
 
 </RelativeLayout>
