@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "591852569825",
+    "firebase_url": "https://odor-1-1574827781665.firebaseio.com",
+    "project_id": "odor-1-1574827781665",
+    "storage_bucket": "odor-1-1574827781665.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591852569825:android:e5b39c3496b975208f23a0",
+        "android_client_info": {
+          "package_name": "com.mga.vikram.odor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591852569825-867ej6nq4oqn441b34df871bhkic4b3h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mga.vikram.odor",
+            "certificate_hash": "8a278289097aef40ee6679e235be48efcc32cd21"
+          }
+        },
+        {
+          "client_id": "591852569825-gkp5n2ushi4r90d5flfnc2j4i6pojd2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKQ4hm_zUFOOYmOZ4Rm0R3cvedWcLFK7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "591852569825-gkp5n2ushi4r90d5flfnc2j4i6pojd2f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
