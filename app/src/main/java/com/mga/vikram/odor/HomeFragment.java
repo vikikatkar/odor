@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,10 +36,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private GoogleSignInOptions gso;
     private static final String TAG = "G-SignInActivity";
     private static final int RC_SIGN_IN = 9001;
+    View loginView;
+
+    SignInButton signInButton;
+    Button signOutButton;
+    TextView statusView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home,null);
+        loginView = inflater.inflate(R.layout.fragment_home,null);
 
         //TBD:  Move this to main activity or Reporter
         // Configure sign-in to request the user's ID, email address, and basic
@@ -52,13 +60,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
         // Set the dimensions of the sign-in button.
-        SignInButton signInButton = view.findViewById(R.id.sign_in_button);
+        signInButton = loginView.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setOnClickListener(this);
 
+        signOutButton = loginView.findViewById(R.id.sign_out_button);
+        signOutButton.setOnClickListener(this);
+        statusView = loginView.findViewById(R.id.sign_in_status_message);
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-        return view;
+        return loginView;
     }
 
     @Override
@@ -70,18 +82,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateUI(FirebaseUser currentUser){
-        if( null != currentUser){
-            String name = currentUser.getDisplayName();
-            Reporter.getInstance().setFirebaseUser(currentUser);
+
+        Reporter.getInstance().setFirebaseUser(currentUser);
+
+        String message = "User should be signed in for reporting data";
+        if( null != currentUser ) {
+            message = "Welcome ! " + Reporter.getInstance().getDisplayName();
+            signInButton.setEnabled(false);
+            signOutButton.setEnabled(true);
+        }else{
+            signInButton.setEnabled(true);
+            signOutButton.setEnabled(false);
         }
+
+        statusView.setText(message);
         //startActivity(new Intent(self, MapsActivity.class));
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signIn();
                 break;
+            case R.id.sign_out_button:
+                signOut();
+                break;
+
         }
     }
     private void signIn() {
@@ -149,7 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void signOut() {
         // Firebase sign out
         mAuth.signOut();
-
+        FirebaseAuth.getInstance().signOut();
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(getActivity(),
                 new OnCompleteListener<Void>() {

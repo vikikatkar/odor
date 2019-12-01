@@ -11,7 +11,10 @@ public class Reporter {
 
     public void setFirebaseUser(FirebaseUser firebaseUser) {
         this.firebaseUser = firebaseUser;
-        this.setDisplayName(firebaseUser.getDisplayName());
+        if( firebaseUser != null ) {
+            this.setDisplayName(firebaseUser.getDisplayName());
+            loggedIn = true;
+        }
     }
 
     FirebaseUser firebaseUser;
