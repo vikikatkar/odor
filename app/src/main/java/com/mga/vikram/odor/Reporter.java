@@ -1,10 +1,20 @@
 package com.mga.vikram.odor;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class Reporter {
-    private Reporter(String displayName) {
-        this.displayName = displayName;
+    private Reporter() {
+        loggedIn = false;
+        this.displayName = "No yet Signed In";
+    }
+    boolean loggedIn;
+
+    public void setFirebaseUser(FirebaseUser firebaseUser) {
+        this.firebaseUser = firebaseUser;
+        this.setDisplayName(firebaseUser.getDisplayName());
     }
 
+    FirebaseUser firebaseUser;
     public String getDisplayName() {
         return displayName;
     }
@@ -22,7 +32,7 @@ public class Reporter {
     public static Reporter getInstance(){
 
         if( null == reporterInstance){
-            reporterInstance = new Reporter("No Yet Signed in !");
+            reporterInstance = new Reporter();
         }
         return reporterInstance;
     }

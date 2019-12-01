@@ -1,11 +1,8 @@
 package com.mga.vikram.odor;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
@@ -17,7 +14,6 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener{
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,25 +24,9 @@ public class MainActivity extends AppCompatActivity
 
         loadFragment(new HomeFragment());
 
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
+
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
-
-    private void updateUI(FirebaseUser currentUser){
-        if( null != currentUser){
-            String name = currentUser.getDisplayName();
-            Reporter.getInstance().setDisplayName(name);
-        }
-        //startActivity(new Intent(self, MapsActivity.class));
-    }
 
     private boolean loadFragment(Fragment fragment){
         if(fragment != null ){
