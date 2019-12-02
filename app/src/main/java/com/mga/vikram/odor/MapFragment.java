@@ -1,5 +1,7 @@
 package com.mga.vikram.odor;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +11,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -138,6 +143,40 @@ public class MapFragment extends Fragment implements
                             report.odorDescription
                             + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: ""),
                     Toast.LENGTH_SHORT).show();
+            //Reporter is Verifier
+            //if( Reporter.getInstance().)
+            {
+                Reporter verifier = Reporter.getInstance();
+                double R = 6371e3; // metres
+                double report_l_r = Math.toRadians(report.lat);
+                double verifier_l_r = Math.toRadians(verifier.getLat());
+                double lat_diff = Math.toRadians((verifier.getLat()-report.lat));
+                double lng_diff = Math.toRadians((verifier.getLng()-report.lng));
+
+                double a = Math.sin(lat_diff/2) * Math.sin(lat_diff/2) +
+                        Math.cos(report_l_r) * Math.cos(verifier_l_r) *
+                                Math.sin(lng_diff/2) * Math.sin(lng_diff/2);
+                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+                double d = R * c;
+
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                // Create and show the dialog.
+                if ( d > 100 ){
+                    YesNoDialog newFragment = new YesNoDialog ("Verifier! ",
+                            "Do you want to verify this report? \n " +
+                                    "You will have to be in same vicinity as this report to verify this report. \n" +
+                                    " Current Distance : " + d + " meters"
+                    );
+                    newFragment.show(ft, "dialog");
+                }else{
+                    YesNoDialog newFragment = new YesNoDialog ("Verifier! ",
+                            "Do you want to verify this report? \n " +
+                                    "You are near the reported location! Thanks for getting here in time!"
+                    );
+                    newFragment.show(ft, "dialog");
+                }
+            }
         }
         //}
 

@@ -49,7 +49,7 @@ public class Report {
         try {
             Date dateTime= null;
             try {
-                    dateTime = new SimpleDateFormat("dd/MM/yyyy").parse(jsonReport.getString("dateTime"));
+                    dateTime = new SimpleDateFormat("MM-dd-yyyy HH:mm").parse(jsonReport.getString("dateTime"));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
