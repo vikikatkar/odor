@@ -72,11 +72,11 @@ public class Reporter implements LocationListener {
         this.lng = lng;
     }
 
-    public Double getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public Double getLng() {
+    public double getLng() {
         return lng;
     }
 
