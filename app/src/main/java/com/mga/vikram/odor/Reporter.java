@@ -1,10 +1,22 @@
 package com.mga.vikram.odor;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
+import androidx.core.content.PermissionChecker;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Reporter {
+public class Reporter implements LocationListener {
     private Reporter() {
         loggedIn = false;
+        locationAvailable = false;
         this.displayName = "No yet Signed In";
     }
     boolean loggedIn;
@@ -13,6 +25,7 @@ public class Reporter {
         this.firebaseUser = firebaseUser;
         if( firebaseUser != null ) {
             this.setDisplayName(firebaseUser.getDisplayName());
+            this.setEmailId(firebaseUser.getEmail());
             loggedIn = true;
         }
     }
@@ -22,13 +35,24 @@ public class Reporter {
         return displayName;
     }
 
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
+    String emailId;
+
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     String displayName;
-    long lat;
-    long lng;
+    double lat;
+    double lng;
+    boolean locationAvailable;
 
     private static Reporter reporterInstance;
 
@@ -40,19 +64,62 @@ public class Reporter {
         return reporterInstance;
     }
 
-    public void setLat(long lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public void setLng(long lng) {
+    public void setLng(double lng) {
         this.lng = lng;
     }
 
-    public long getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public long getLng() {
+    public Double getLng() {
         return lng;
+    }
+
+    boolean isLoggedIn(){
+        return loggedIn;
+    }
+
+    boolean isLocationAvailable() {
+        return locationAvailable;
+    }
+
+    void updateLocation(Context context){
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        int permission = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
+
+        if (permission == PermissionChecker.PERMISSION_GRANTED) {
+            // good to go
+            locationAvailable = true;
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this);
+        } else {
+            // permission not granted, you decide what to do
+            locationAvailable = false;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        setLat(location.getLatitude());
+        setLng(location.getLongitude());
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d("Latitude","disable");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Log.d("Latitude","enable");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d("Latitude","status");
     }
 }

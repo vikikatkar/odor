@@ -1,7 +1,11 @@
 package com.mga.vikram.odor;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,7 +34,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener{
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -76,18 +80,40 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "HomeFragment : onStart" );
+
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+
+        Reporter reporter = Reporter.getInstance();
+        reporter.setFirebaseUser(currentUser);
+        reporter.updateLocation(getActivity().getApplicationContext());
+        updateReporterUI(reporter);
     }
 
-    private void updateUI(FirebaseUser currentUser){
+    private void updateUI(FirebaseUser currentUser) {
+        Log.d(TAG, "HomeFragment : updateUI" );
 
-        Reporter.getInstance().setFirebaseUser(currentUser);
+        Reporter reporter = Reporter.getInstance();
+
+        reporter.setFirebaseUser(currentUser);
+        reporter.updateLocation(getActivity().getApplicationContext());
+        updateReporterUI(reporter);
+    }
+
+    private void updateReporterUI(Reporter reporter){
+        Log.d(TAG, "HomeFragment : updateReporterUI" );
 
         String message = "User should be signed in for reporting data";
-        if( null != currentUser ) {
-            message = "Welcome ! " + Reporter.getInstance().getDisplayName();
+
+
+        if( reporter != null && reporter.isLoggedIn() ) {
+            message = "Welcome ! " + reporter.getDisplayName() +" : " + reporter.getEmailId();
+            if ( reporter.isLocationAvailable() ){
+                message += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
+
+                OdorServer.sendReport(getContext());
+            }
             signInButton.setEnabled(false);
             signOutButton.setEnabled(true);
         }else{
@@ -130,7 +156,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 // [START_EXCLUDE]
-                updateUI(null);
+                updateReporterUI(null);
                 // [END_EXCLUDE]
             }
         }
@@ -157,7 +183,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            updateUI(null);
+                            updateReporterUI(null);
                         }
 
                         // [START_EXCLUDE]
@@ -182,7 +208,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
+                        updateReporterUI(null);
                     }
                 });
     }
@@ -196,10 +222,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
+                        updateReporterUI(null);
                     }
                 });
     }
 
 
 }
+

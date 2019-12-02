@@ -20,9 +20,13 @@ public class DashboardFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard,null);
 
-        String displayName = Reporter.getInstance().getDisplayName();
+        Reporter reporter = Reporter.getInstance();
+        String displayName = reporter.getDisplayName();
         TextView mTextMessage;
         mTextMessage = view.findViewById(R.id.message);
+        if ( reporter.isLocationAvailable() ){
+            displayName += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
+        }
         mTextMessage.setText(displayName==null? "Not yet signed in!": displayName);
 
         return view;
