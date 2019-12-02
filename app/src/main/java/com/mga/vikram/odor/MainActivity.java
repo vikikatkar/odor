@@ -22,17 +22,15 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(this);
 
-        loadFragment(new HomeFragment());
-
-
+        loadFragment(new HomeFragment(),"navigation_home");
     }
 
 
-    private boolean loadFragment(Fragment fragment){
+    private boolean loadFragment(Fragment fragment, String tag){
         if(fragment != null ){
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container,fragment).commit();
+                    .replace(R.id.fragment_container,fragment,tag).commit();
             return true;
         }
         return  false;
@@ -41,78 +39,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Fragment fragment = null;
+        String tag = null;
         switch (menuItem.getItemId()){
             case R.id.navigation_home:
                 fragment = new HomeFragment();
+                tag = "navigation_home";
                 break;
             case R.id.navigation_dashboard:
                 fragment = new DashboardFragment();
+                tag = "navigation_dashboard";
                 break;
             case R.id.navigation_notifications:
                 fragment = new MapFragment();
+                tag = "navigation_notifications";
                 break;
         }
-        return loadFragment(fragment);
+        return loadFragment(fragment,tag);
     }
 }
-
-/*
-
-public class MainActivity extends AppCompatActivity {
-    private TextView mTextMessage;
-    private MainActivity self;
-    private FirebaseAuth mAuth;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_dashboard:
-                    mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_notifications:
-                    mTextMessage.setText(R.string.title_notifications);
-                    startActivity(new Intent(self, MapsActivity.class));
-                    return true;
-            }
-            return false;
-        }
-    };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        mTextMessage = findViewById(R.id.message);
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        //startActivity(new Intent(this, MapsActivity.class));
-        self = this;
-
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
-
-    private void updateUI(FirebaseUser currentUser){
-        String name = "Not yet signed in";
-        if( null != currentUser)
-            name = currentUser.getDisplayName();
-        //mTextMessage.setText(name);
-        //startActivity(new Intent(self, MapsActivity.class));
-    }
-}
-
-* */

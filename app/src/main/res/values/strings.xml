@@ -4,4 +4,60 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_maps">Map</string>
+
+    <string-array name="odors">
+        <item>---Please Select an Odor here ---</item>
+        <item>Pungent</item>
+        <item>Irritating</item>
+        <item>Mettalic</item>
+        <item>Sharp</item>
+        <item>Fecal</item>
+        <item>Manure</item>
+        <item>Sewer</item>
+        <item>Burnt/Smoky</item>
+        <item>Tar</item>
+        <item>Rubber</item>
+        <item>Solvent</item>
+        <item>Glue</item>
+        <item>Gasoline</item>
+        <item>Paint</item>
+        <item>Mothballs</item>
+        <item>Shoe Polish</item>
+        <item>Chemicals</item>
+        <item>Medical</item>
+        <item>Alcohol</item>
+        <item>Ammonia</item>
+        <item>Cat</item>
+        <item>Fishy</item>
+        <item>Yeast</item>
+        <item>Sour Milk</item>
+        <item>Rancid</item>
+        <item>Fatty/Oily</item>
+        <item>Sweat</item>
+        <item>Sour Cheese</item>
+        <item>Purid</item>
+        <item>Decay</item>
+        <item>Soap</item>
+        <item>Detergent</item>
+        <item>Fruit</item>
+        <item>Citrus</item>
+        <item>Green</item>
+        <item>Decaying Vegetation</item>
+        <item>Rotten Eggs</item>
+        <item>Garlic</item>
+        <item>Marsh/Swamp</item>
+        <item>Canned Corn</item>
+        <item>Rotten Cabbage</item>
+        <item>Skunk</item>
+        <item>Burnt Rubber</item>
+        <item>Sulfide</item>
+        <item>Coffee Grounds</item>
+        <item>Wood</item>
+        <item>Green/Grass</item>
+        <item>Cardboard</item>
+        <item>Hay</item>
+        <item>Chlorinous</item>
+        <item>Earth/Must</item>
+        <item>Mold</item>
+    </string-array>
 </resources>

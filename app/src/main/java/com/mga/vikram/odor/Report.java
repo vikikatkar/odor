@@ -28,6 +28,22 @@ public class Report {
         this.customDescription = customDescription;
     }
 
+    public JSONObject getJSONObject(){
+        JSONObject jsReport = new JSONObject();
+        try {
+            jsReport.put("emailHash",emailHash);
+            jsReport.put("lat",lat);
+            jsReport.put("lng",lng);
+            jsReport.put("odorCategory",odorCategory);
+            jsReport.put("odorDescription",odorDescription);
+            jsReport.put("customDescription",customDescription);
+            return jsReport;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Report getReportFromJSON(JSONObject jsonReport){
         Report report = null;
         try {

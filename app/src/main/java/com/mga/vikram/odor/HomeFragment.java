@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -112,7 +113,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             if ( reporter.isLocationAvailable() ){
                 message += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
 
-                OdorServer.getReport(getContext());
+                Toast.makeText(getView().getContext(), message, Toast.LENGTH_SHORT).show();
+
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new OdorReportSubmissionFragment(), "OdorReportSubmissionFragment").commit();
+
             }
             signInButton.setEnabled(false);
             signOutButton.setEnabled(true);
