@@ -17,9 +17,35 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class OdorServer{
-    public static void sendReport(Context context){
-        //String url = "https://fresh-metrics-246800.appspot.com/activity/";
-        String url = "http://192.168.0.109:8080/odor/report";
+    static String serverURL = "http://192.168.0.109:8080/";
+    public static void getReport(Context context){
+        String url = serverURL+"/odor/report";
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            String statOf = null;
+                            // Display the first 500 characters of the response string.
+                            Log.i("OdorServer", "Response : to String : " + response.getString(0));
+                            Log.i("OdorServer", " Response :  " + response);
+                        } catch (
+                                JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("OdorServer", "Error on request : "+error.getMessage());
+            }
+        });
+        queue.add(stringRequest);
+    }
+
+    public static void sendReport(Context context, Report report){
+        String url = serverURL +"odor/report";
         RequestQueue queue = Volley.newRequestQueue(context);
         JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONArray>() {

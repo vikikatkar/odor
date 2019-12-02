@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
             if ( reporter.isLocationAvailable() ){
                 message += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
 
-                OdorServer.sendReport(getContext());
+                OdorServer.getReport(getContext());
             }
             signInButton.setEnabled(false);
             signOutButton.setEnabled(true);

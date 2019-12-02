@@ -3,8 +3,15 @@ package com.mga.vikram.odor;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -14,6 +21,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MapsActivity extends FragmentActivity implements
@@ -58,10 +74,48 @@ public class MapsActivity extends FragmentActivity implements
 
         Marker aMarker = mMap.addMarker(aMarkerOption);
         aMarker.showInfoWindow();
-
         mMap.moveCamera(CameraUpdateFactory.newLatLng(milpitas));
 
         mMap.setOnMarkerClickListener(this);
+
+        String url = OdorServer.serverURL+"/odor/report";
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray array) {
+                        try {
+                            String statOf = null;
+                            // Display the first 500 characters of the response string.
+                            Log.i("MapFragment", " Response :  " + array);
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject jsonReport = array.getJSONObject(i);
+
+                                Report report = Report.getReportFromJSON(jsonReport);
+
+                                LatLng pos = new LatLng(report.lat,report.lng);
+                                MarkerOptions aMarkerOption = new MarkerOptions().position(pos).title(report.odorCategory);
+                                BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                                aMarkerOption.icon(bd);
+
+                                Marker aMarker = mMap.addMarker(aMarkerOption);
+                                aMarker.showInfoWindow();
+                                aMarker.setTag(report);
+                            }
+
+                        } catch (
+                                JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("MapFragment", "Error on request : "+error.getMessage());
+            }
+        });
+        queue.add(stringRequest);
+
     }
 
     @Override
@@ -73,10 +127,10 @@ public class MapsActivity extends FragmentActivity implements
         // Check if a click count was set, then display the click count.
         //if (clickCount != null) {
         //    clickCount = clickCount + 1;
-            marker.setTag(clickCount);
+        Report report = (Report) marker.getTag();
             Toast.makeText(this,
                     marker.getTitle() +
-                            "Smell Type : Fertilizer\n Level : High",
+                            report.odorDescription + " " + report.customDescription,
                     Toast.LENGTH_SHORT).show();
         //}
 

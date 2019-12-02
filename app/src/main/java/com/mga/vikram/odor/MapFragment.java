@@ -1,6 +1,7 @@
 package com.mga.vikram.odor;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,6 +26,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
@@ -62,6 +73,49 @@ public class MapFragment extends Fragment implements
         Marker aMarker = mMap.addMarker(aMarkerOption);
         aMarker.showInfoWindow();
 
+        Reporter reporter = Reporter.getInstance();
+        if( reporter != null && reporter.isLoggedIn() ) {
+            //TBD : Check if User is Verifier or Reporter
+            //OdorServer.getReport(getContext());
+
+            String url = OdorServer.serverURL+"/odor/report";
+            RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+            JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray array) {
+                            try {
+                                String statOf = null;
+                                // Display the first 500 characters of the response string.
+                                Log.i("MapFragment", " Response :  " + array);
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject jsonReport = array.getJSONObject(i);
+
+                                    Report report = Report.getReportFromJSON(jsonReport);
+
+                                    LatLng pos = new LatLng(report.lat,report.lng);
+                                    MarkerOptions aMarkerOption = new MarkerOptions().position(pos).title(report.odorCategory);
+                                    BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                                    aMarkerOption.icon(bd);
+
+                                    Marker aMarker = mMap.addMarker(aMarkerOption);
+                                    aMarker.showInfoWindow();
+                                    aMarker.setTag(report);
+                                }
+
+                            } catch (
+                                    JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("MapFragment", "Error on request : "+error.getMessage());
+                }
+            });
+            queue.add(stringRequest);
+        }
         mMap.moveCamera(CameraUpdateFactory.newLatLng(milpitas));
 
         mMap.setOnMarkerClickListener(this);
@@ -71,16 +125,20 @@ public class MapFragment extends Fragment implements
     public boolean onMarkerClick(final Marker marker) {
 
         // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
+        Report report = (Report) marker.getTag();
+        if( report == null ){
+            Toast.makeText(getActivity().getApplicationContext(),
+                    marker.getTitle() +
+                            " The city Of Milpitas!",
+                    Toast.LENGTH_SHORT).show();
 
-        // Check if a click count was set, then display the click count.
-        //if (clickCount != null) {
-        //    clickCount = clickCount + 1;
-        marker.setTag(clickCount);
-        Toast.makeText(getActivity().getApplicationContext(),
-                marker.getTitle() +
-                        "Smell Type : Fertilizer\n Level : High",
-                Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getActivity().getApplicationContext(),
+                    marker.getTitle() + " \n " +
+                            report.odorDescription
+                            + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: ""),
+                    Toast.LENGTH_SHORT).show();
+        }
         //}
 
         // Return false to indicate that we have not consumed the event and that we wish
