@@ -24,9 +24,9 @@ public class DashboardFragment extends Fragment{
         String displayName = reporter.getDisplayName();
         TextView mTextMessage;
         mTextMessage = view.findViewById(R.id.message);
-        if ( reporter.isLocationAvailable() ){
+        /*if ( reporter.isLocationAvailable() ){
             displayName += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
-        }
+        }*/
         mTextMessage.setText(displayName==null? "Not yet signed in!": displayName);
 
         return view;

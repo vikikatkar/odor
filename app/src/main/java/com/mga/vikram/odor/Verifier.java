@@ -3,6 +3,7 @@ package com.mga.vikram.odor;
 public class Verifier extends Reporter {
     private static Verifier verifierInstance;
     private boolean isVerifier=false;
+    private Report reportToVerify;
 
     public static Verifier getInstance() {
         if( null == verifierInstance){
@@ -23,4 +24,11 @@ public class Verifier extends Reporter {
         return isVerifier;
     }
 
+    public void verifyReport(Report report){
+        reportToVerify = report;
+    }
+
+    public Report getReportToVerify(){
+        return reportToVerify;
+    }
 }

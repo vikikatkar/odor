@@ -106,10 +106,15 @@ public class MainActivity extends AppCompatActivity
         if( signal.equals("login-success") ){
             loginSuccessful = true;
             updateLoginMenu();
-        }else{
+        }
+        if( signal.equals("logout-success") ){
             loginSuccessful = false;
             updateLoginMenu();
         }
+        if( signal.equals("verify-report") ){
+            loadFragment(homeFragment,"navigation_home");
+        }
+
     }
     void updateLoginMenu(){
         if( appBarMenu!=null ){

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout"
+    android:background="@drawable/image_portrait"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,21 +17,39 @@
         tools:layout_editor_absoluteY="0dp">
 
         <TextView
+            android:id="@+id/reportedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reported ODOR HERE : "
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+
+
+            android:textColor="#3656F4"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="What odor are you smelling?\n (Please select below)"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/reportedTextView" />
 
         <Spinner
             android:id="@+id/odorSpinner"
             android:layout_width="388dp"
             android:layout_height="155dp"
             android:spinnerMode="dialog"
+            app:layout_constraintBottom_toTopOf="@+id/submitReportButton"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -39,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Report Odor"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

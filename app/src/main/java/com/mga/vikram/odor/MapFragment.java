@@ -1,6 +1,7 @@
 package com.mga.vikram.odor;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,11 +45,13 @@ public class MapFragment extends Fragment implements
         GoogleMap.OnMarkerClickListener{
     private GoogleMap mMap;
     final Calendar cal = Calendar.getInstance();
+    View view;
+    Report reportToVerify;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_maps,container, false);
+        view = inflater.inflate(R.layout.activity_maps,container, false);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -174,12 +177,12 @@ public class MapFragment extends Fragment implements
                             marker.getTitle() + " \n " +
                                     report.odorDescription
                                     + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: "")
-                                    + ( "\nCan not verify : More than 30 minutes past this Report."),
+                                    + ( "\nYou can not verify : More than 30 minutes past this Report."),
                             Toast.LENGTH_LONG).show();
                     return false;
                 }
 
-                Reporter verifier = Verifier.getInstance();
+                Verifier verifier = Verifier.getInstance();
                 double R = 6371e3; // metres
                 double report_l_r = Math.toRadians(report.lat);
                 double verifier_l_r = Math.toRadians(verifier.getLat());
@@ -196,15 +199,22 @@ public class MapFragment extends Fragment implements
                 // Create and show the dialog.
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 if ( d > 100 ){
-                    AlertDialog newFragment = new AlertDialog ("Verifier ",
+                    AlertDialog newFragment = new AlertDialog ("Hello Verifier ! ",
                             "Do you want to verify this report? \n " +
                                     "You will have to be in same vicinity as this report to verify this report. \n" +
                                     " Current Distance : " + (new Double(d).intValue() )+ " meters"
                     );
                     newFragment.show(ft, "dialog");
                 }else{
-                    YesNoDialog newFragment = new YesNoDialog ("Verifier : Thanks for being here in time! ",
-                            "Do you want to verify this report? \n "
+                    reportToVerify = report;
+                    YesNoDialog newFragment = new YesNoDialog ("Hello Verifier ! \n Thanks for being here in time! ",
+                            "Do you want to verify this report? \n ",
+                            new Dialog.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    onReadyToReport(view);
+                                }
+                            }
                     );
                     newFragment.show(ft, "dialog");
                 }
@@ -216,5 +226,25 @@ public class MapFragment extends Fragment implements
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
+    }
+
+    //To Talk with main activity
+
+    private HomeFragment.OnLoginStatusChangeListener onLoginStatusChangeListener;
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+
+        if( context instanceof HomeFragment.OnLoginStatusChangeListener){
+            onLoginStatusChangeListener = (HomeFragment.OnLoginStatusChangeListener)context;
+        }else{
+            throw new ClassCastException(context.toString() + "must implement OnLoginStatusChangeListener");
+        }
+    }
+    void onReadyToReport(View view){
+        Verifier.getInstance().verifyReport(reportToVerify);
+
+        onLoginStatusChangeListener.onLoginItemSelected("verify-report");
     }
 }

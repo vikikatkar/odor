@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,8 +54,21 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
 
         spinner.setOnItemSelectedListener(this);
 
+        TextView reportedTextView = view.findViewById(R.id.reportedTextView);
+
         //Disable Submission till item is not selected
         Button submitReportButton = view.findViewById(R.id.submitReportButton);
+        if( reporter.isVerifier() && reporter.getReportToVerify()!=null){
+            submitReportButton.setText("Verifiy");
+
+            reportedTextView.setText("Reported Odor at this location : \n"
+                    + reporter.getReportToVerify().odorCategory + "\n "
+                    + reporter.getReportToVerify().odorDescription);
+
+        }else{
+            submitReportButton.setText("Report");
+            reportedTextView.setText("");//Blank it
+        }
         submitReportButton.setClickable(false);
         submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
 
@@ -81,7 +95,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
                 reporter.lat,reporter.lng,"", odorDescription,"");
 
 
-        Toast.makeText(parent.getContext(), odorDescription, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(parent.getContext(), odorDescription, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -92,28 +106,71 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
     @Override
     public void onClick(View v) {
         //Submit button
+        Verifier reporter = Verifier.getInstance();
 
-        String url = getString(R.string.server_base_url) +"odor/report";
+        String url = getString(R.string.server_base_url);
         RequestQueue queue = Volley.newRequestQueue(getView().getContext());
+        JsonObjectRequest stringRequest;
 
 
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST, url, report.getJSONObject(),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i("Odor-Server", " Response :  " + response);
-                        Toast.makeText(getView().getContext(), "Thanks for Reporting Odor!", Toast.LENGTH_SHORT).show();
-                        Button submitReportButton = getView().findViewById(R.id.submitReportButton);
-                        submitReportButton.setClickable(false);
-                        submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-                    }
-                },
-                new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Odor-Server", "Error on request : "+error.getMessage());
-            }
-        });
+        if( reporter.isVerifier() && reporter.getReportToVerify()!=null) {
+            url+="odor/verify";
+            stringRequest = new JsonObjectRequest(Request.Method.POST, url, reporter.getReportToVerify().getJSONObject(),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i("Odor-Server", " Response :  " + response);
+
+                            Verifier reporter = Verifier.getInstance();
+                            String displayName = reporter.getDisplayName();
+
+                            Toast.makeText(getView().getContext(), displayName + "\n Thank you for Verigying Odor Report!" +
+                                            "\n You are helping Milpitas community in understanding odor cause!"
+                                    , Toast.LENGTH_LONG).show();
+
+                            //Resetting View
+                            Button submitReportButton = getView().findViewById(R.id.submitReportButton);
+                            submitReportButton.setClickable(false);
+                            submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+                            submitReportButton.setText("Report");
+                            TextView reportedTextView = getView().findViewById(R.id.reportedTextView);
+                            reportedTextView.setText("");//Blank it
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Odor-Server", "Error on request : "+error.getMessage());
+                        }
+                    });
+        }else{
+            url+="odor/report";
+            stringRequest = new JsonObjectRequest(Request.Method.POST, url, report.getJSONObject(),
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i("Odor-Server", " Response :  " + response);
+
+                            Verifier reporter = Verifier.getInstance();
+                            String displayName = reporter.getDisplayName();
+
+                            Toast.makeText(getView().getContext(), displayName + "\n Thank you for Reporting Odor!" +
+                                            "\n You are helping Milpitas community in understanding odor cause!"
+                                    , Toast.LENGTH_LONG).show();
+                            Button submitReportButton = getView().findViewById(R.id.submitReportButton);
+                            submitReportButton.setClickable(false);
+                            submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Odor-Server", "Error on request : "+error.getMessage());
+                        }
+                    });
+        }
+
+
         queue.add(stringRequest);
     }
 }

@@ -61,7 +61,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
     View loginView;
 
     SignInButton signInButton;
-    Button signOutButton;
     TextView statusView;
 
     Button loginLogoutButton;
@@ -88,8 +87,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setOnClickListener(this);
 
-        signOutButton = loginView.findViewById(R.id.sign_out_button);
-        signOutButton.setOnClickListener(this);
+        //signOutButton = loginView.findViewById(R.id.sign_out_button);
+        //signOutButton.setOnClickListener(this);
 
         statusView = loginView.findViewById(R.id.sign_in_status_message);
 
@@ -132,14 +131,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
     private void updateReporterUI(Reporter reporter){
         Log.d(TAG, "HomeFragment : updateReporterUI" );
 
-        String message = "User should be signed in for reporting data";
+        String message = "Please Sign In to report odor!";
 
 
 
         if( reporter != null && reporter.isLoggedIn() ) {
-            message = "Welcome ! " + reporter.getDisplayName() +" : " + reporter.getEmailId();
+            message = "Welcome ! " + reporter.getDisplayName() ;
             if ( reporter.isLocationAvailable() ){
-                message += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
+                //message += " : " + reporter.getEmailId() + " : Location : " + reporter.getLat() + " : " + reporter.getLng();
 
                 Toast.makeText(getView().getContext(), message, Toast.LENGTH_SHORT).show();
 
@@ -149,10 +148,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
             }
             onLoginSuccessFull(getView());
             signInButton.setEnabled(false);
-            signOutButton.setEnabled(true);
+  //          signOutButton.setEnabled(true);
         }else{
             signInButton.setEnabled(true);
-            signOutButton.setEnabled(false);
+//            signOutButton.setEnabled(false);
         }
 
         statusView.setText(message);
@@ -194,9 +193,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
             case R.id.sign_in_button:
                 signIn();
                 break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
+            //case R.id.sign_out_button:
+            //    signOut();
+            //    break;
 
         }
     }
@@ -319,8 +318,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
     }
 
 
-    boolean signOut=false;
+
     // To receive communication from MainActivity
+    boolean signOut=false;
+
     public void onActivityMessage(String signal){
         if( signal.equals("sign-out") ){
             signOut = true;
