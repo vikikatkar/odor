@@ -22,12 +22,13 @@ public class Reporter implements LocationListener {
     double lng;
     boolean locationAvailable;
 
-    private Reporter() {
+    protected Reporter() {
         loggedIn = false;
         locationAvailable = false;
         this.displayName = "No yet Signed In";
     }
 
+    /*
     private static Reporter reporterInstance;
     public static Reporter getInstance(){
 
@@ -36,6 +37,7 @@ public class Reporter implements LocationListener {
         }
         return reporterInstance;
     }
+    */
 
     FirebaseUser firebaseUser;
     public void setFirebaseUser(FirebaseUser firebaseUser) {

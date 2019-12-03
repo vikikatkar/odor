@@ -38,7 +38,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_submit_odor_report,null);
 
-        Reporter reporter = Reporter.getInstance();
+        Verifier reporter = Verifier.getInstance();
         String displayName = reporter.getDisplayName();
 
         Spinner spinner = view.findViewById(R.id.odorSpinner);
@@ -76,7 +76,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
             submitReportButton.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
             submitReportButton.setOnClickListener(this);
         }
-        Reporter reporter = Reporter.getInstance();
+        Verifier reporter = Verifier.getInstance();
         report = new Report(0L, new Date(), reporter.emailId.hashCode(),
                 reporter.lat,reporter.lng,"", odorDescription,"");
 

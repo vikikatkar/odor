@@ -20,12 +20,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,6 +46,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener, OnActivityChangeListener{
@@ -93,19 +109,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        Reporter reporter = Reporter.getInstance();
+        Verifier reporter = Verifier.getInstance();
         reporter.setFirebaseUser(currentUser);
         reporter.updateLocation(getActivity().getApplicationContext());
+        checkIfVerifier(reporter);
+
         updateReporterUI(reporter);
     }
 
     private void updateUI(FirebaseUser currentUser) {
         Log.d(TAG, "HomeFragment : updateUI" );
 
-        Reporter reporter = Reporter.getInstance();
+        Verifier reporter = Verifier.getInstance();
 
         reporter.setFirebaseUser(currentUser);
         reporter.updateLocation(getActivity().getApplicationContext());
+        checkIfVerifier(reporter);
+
         updateReporterUI(reporter);
     }
 
@@ -137,6 +157,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
 
         statusView.setText(message);
         //startActivity(new Intent(self, MapsActivity.class));
+    }
+
+    void checkIfVerifier(Reporter reporter){
+        if( ! reporter.isLoggedIn() ){
+            return;
+        }
+        String url = getString(R.string.server_base_url)+"/odor/verifier/"+reporter.getEmailId().hashCode();
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String str) {
+                        if( str.equals("true") ){
+                            Verifier verifier = Verifier.getInstance();
+                            verifier.enableVerifier();
+                            Log.i("checkIfVerifier: "," Success");
+                        }else{
+                            Log.i("checkIfVerifier:" ," Not a verifier");
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("checkIfVerifier", "Error on request : "+error.getMessage());
+            }
+        });
+        queue.add(stringRequest);
+
     }
 
     @Override
@@ -275,7 +324,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
     public void onActivityMessage(String signal){
         if( signal.equals("sign-out") ){
             signOut = true;
-            Reporter.getInstance().logout();
+            Verifier.getInstance().logout();
         }
     }
 }

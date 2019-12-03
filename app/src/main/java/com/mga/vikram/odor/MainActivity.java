@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity
                 //User wants to logout
                 homeFragment.onActivityMessage("sign-out");
                 updateLoginMenu();
+                item.setIcon(R.drawable.ic_login_black_24dp);//Shows Login icon
             }
             tag = "navigation_home";
             return loadFragment(homeFragment,tag);

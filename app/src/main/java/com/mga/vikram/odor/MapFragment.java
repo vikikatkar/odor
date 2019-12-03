@@ -43,6 +43,7 @@ public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener{
     private GoogleMap mMap;
+    final Calendar cal = Calendar.getInstance();
 
     @Nullable
     @Override
@@ -83,56 +84,64 @@ public class MapFragment extends Fragment implements
         Marker aMarker = mMap.addMarker(aMarkerOption);
         aMarker.showInfoWindow();
 
-        Reporter reporter = Reporter.getInstance();
-        if( reporter != null && reporter.isLoggedIn() ) {
-            //TBD : Check if User is Verifier or Reporter
+        Verifier reporter = Verifier.getInstance();
 
-            //Today
-            String dateTime = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
-
-            String url = getString(R.string.server_base_url)+"/odor/report/"+dateTime;
-
-            RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-            JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
-                    new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray array) {
-                            try {
-                                String statOf = null;
-                                // Display the first 500 characters of the response string.
-                                Log.i("MapFragment", " Response :  " + array);
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject jsonReport = array.getJSONObject(i);
-
-                                    Report report = Report.getReportFromJSON(jsonReport);
-
-                                    LatLng pos = new LatLng(report.lat,report.lng);
-                                    MarkerOptions aMarkerOption = new MarkerOptions().position(pos).title(report.odorCategory);
-                                    BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
-                                    aMarkerOption.icon(bd);
-
-                                    Marker aMarker = mMap.addMarker(aMarkerOption);
-                                    aMarker.showInfoWindow();
-                                    aMarker.setTag(report);
-                                }
-
-                            } catch (
-                                    JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("MapFragment", "Error on request : "+error.getMessage());
-                }
-            });
-            queue.add(stringRequest);
-
+        Date requestDate;
+        if( reporter.isVerifier() ){
+            requestDate = new Date();
+        }else{
+            requestDate = yesterday();
         }
+
+
+        String dateTime = new SimpleDateFormat("MM-dd-yyyy").format(requestDate);
+
+        String url = getString(R.string.server_base_url)+"/odor/report/"+dateTime;
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray array) {
+                        try {
+                            String statOf = null;
+                            // Display the first 500 characters of the response string.
+                            Log.i("MapFragment", " Response :  " + array);
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject jsonReport = array.getJSONObject(i);
+
+                                Report report = Report.getReportFromJSON(jsonReport);
+
+                                LatLng pos = new LatLng(report.lat,report.lng);
+                                MarkerOptions aMarkerOption = new MarkerOptions().position(pos).title(report.odorCategory);
+                                BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                                aMarkerOption.icon(bd);
+
+                                Marker aMarker = mMap.addMarker(aMarkerOption);
+                                aMarker.showInfoWindow();
+                                aMarker.setTag(report);
+                            }
+
+                        } catch (
+                                JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("MapFragment", "Error on request : "+error.getMessage());
+            }
+        });
+        queue.add(stringRequest);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(milpitas));
 
         mMap.setOnMarkerClickListener(this);
+    }
+
+    private Date yesterday() {
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
     }
 
     @Override
@@ -153,7 +162,7 @@ public class MapFragment extends Fragment implements
                             + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: ""),
                     Toast.LENGTH_SHORT).show();
             //Reporter is Verifier
-            //if( Reporter.getInstance().)
+            if( Verifier.getInstance().isVerifier())
             {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(report.dateTime );
@@ -165,12 +174,12 @@ public class MapFragment extends Fragment implements
                             marker.getTitle() + " \n " +
                                     report.odorDescription
                                     + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: "")
-                                    + ( "Can not verify : More than 30 minutes past this Report."),
-                            Toast.LENGTH_SHORT).show();
+                                    + ( "\nCan not verify : More than 30 minutes past this Report."),
+                            Toast.LENGTH_LONG).show();
                     return false;
                 }
 
-                Reporter verifier = Reporter.getInstance();
+                Reporter verifier = Verifier.getInstance();
                 double R = 6371e3; // metres
                 double report_l_r = Math.toRadians(report.lat);
                 double verifier_l_r = Math.toRadians(verifier.getLat());

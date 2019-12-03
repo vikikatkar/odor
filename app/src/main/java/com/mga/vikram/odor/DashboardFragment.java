@@ -20,7 +20,7 @@ public class DashboardFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard,null);
 
-        Reporter reporter = Reporter.getInstance();
+        Reporter reporter = Verifier.getInstance();
         String displayName = reporter.getDisplayName();
         TextView mTextMessage;
         mTextMessage = view.findViewById(R.id.message);
