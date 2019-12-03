@@ -22,13 +22,13 @@ public class YesNoDialog extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.no, new Dialog.OnClickListener() {
+                .setNegativeButton("NO", new Dialog.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // do nothing (will close dialog)
                     }
                 })
-                .setPositiveButton(android.R.string.yes,  new Dialog.OnClickListener() {
+                .setPositiveButton("Yes! I am Ready !",  new Dialog.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // do something

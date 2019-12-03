@@ -40,14 +40,6 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
 
         Reporter reporter = Reporter.getInstance();
         String displayName = reporter.getDisplayName();
-        /*
-        TextView mTextMessage;
-        mTextMessage = view.findViewById(R.id.message);
-        if ( reporter.isLocationAvailable() ){
-            displayName += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
-        }
-        mTextMessage.setText(displayName==null? "Not yet signed in!": displayName);
-        */
 
         Spinner spinner = view.findViewById(R.id.odorSpinner);
 
@@ -100,7 +92,8 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
     @Override
     public void onClick(View v) {
         //Submit button
-        String url = OdorServer.serverURL +"odor/report";
+
+        String url = getString(R.string.server_base_url) +"odor/report";
         RequestQueue queue = Volley.newRequestQueue(getView().getContext());
 
 
@@ -108,7 +101,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.i("OdorServer", " Response :  " + response);
+                        Log.i("Odor-Server", " Response :  " + response);
                         Toast.makeText(getView().getContext(), "Thanks for Reporting Odor!", Toast.LENGTH_SHORT).show();
                         Button submitReportButton = getView().findViewById(R.id.submitReportButton);
                         submitReportButton.setClickable(false);
@@ -118,7 +111,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
                 new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("OdorServer", "Error on request : "+error.getMessage());
+                Log.e("Odor-Server", "Error on request : "+error.getMessage());
             }
         });
         queue.add(stringRequest);

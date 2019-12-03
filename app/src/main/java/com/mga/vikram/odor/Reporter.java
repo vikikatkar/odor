@@ -14,48 +14,21 @@ import androidx.core.content.PermissionChecker;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Reporter implements LocationListener {
-    private Reporter() {
-        loggedIn = false;
-        locationAvailable = false;
-        this.displayName = "No yet Signed In";
-    }
+
     boolean loggedIn;
-
-    public void setFirebaseUser(FirebaseUser firebaseUser) {
-        this.firebaseUser = firebaseUser;
-        if( firebaseUser != null ) {
-            this.setDisplayName(firebaseUser.getDisplayName());
-            this.setEmailId(firebaseUser.getEmail());
-            loggedIn = true;
-        }
-    }
-
-    FirebaseUser firebaseUser;
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getEmailId() {
-        return emailId;
-    }
-
-    public void setEmailId(String emailId) {
-        this.emailId = emailId;
-    }
-
     String emailId;
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     String displayName;
     double lat;
     double lng;
     boolean locationAvailable;
 
-    private static Reporter reporterInstance;
+    private Reporter() {
+        loggedIn = false;
+        locationAvailable = false;
+        this.displayName = "No yet Signed In";
+    }
 
+    private static Reporter reporterInstance;
     public static Reporter getInstance(){
 
         if( null == reporterInstance){
@@ -64,30 +37,53 @@ public class Reporter implements LocationListener {
         return reporterInstance;
     }
 
+    FirebaseUser firebaseUser;
+    public void setFirebaseUser(FirebaseUser firebaseUser) {
+        this.firebaseUser = firebaseUser;
+        if( firebaseUser != null ) {
+            this.setDisplayName(firebaseUser.getDisplayName());
+            this.setEmailId(firebaseUser.getEmail());
+            loggedIn = true;
+        }
+    }
+    public String getDisplayName() {
+        return displayName;
+    }
+    public String getEmailId() {
+        return emailId;
+    }
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
     public void setLat(double lat) {
         this.lat = lat;
     }
-
     public void setLng(double lng) {
         this.lng = lng;
     }
-
     public double getLat() {
         return lat;
     }
-
     public double getLng() {
         return lng;
     }
-
     boolean isLoggedIn(){
         return loggedIn;
     }
 
+    public void logout(){
+        loggedIn = false;
+        locationAvailable = false;
+        this.displayName = "No yet Signed In";
+        this.setEmailId(null);
+        this.firebaseUser = null;
+    }
     boolean isLocationAvailable() {
         return locationAvailable;
     }
-
     void updateLocation(Context context){
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         int permission = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -101,23 +97,19 @@ public class Reporter implements LocationListener {
             locationAvailable = false;
         }
     }
-
     @Override
     public void onLocationChanged(Location location) {
         setLat(location.getLatitude());
         setLng(location.getLongitude());
     }
-
     @Override
     public void onProviderDisabled(String provider) {
         Log.d("Latitude","disable");
     }
-
     @Override
     public void onProviderEnabled(String provider) {
         Log.d("Latitude","enable");
     }
-
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude","status");

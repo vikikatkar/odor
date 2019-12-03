@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -36,6 +35,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener{
@@ -49,6 +52,7 @@ public class MapFragment extends Fragment implements
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
         return view;
     }
 
@@ -64,6 +68,7 @@ public class MapFragment extends Fragment implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
 
         // Add a marker in Sydney and move the camera
         LatLng milpitas = new LatLng(37.432335, -121.899574);
@@ -81,9 +86,12 @@ public class MapFragment extends Fragment implements
         Reporter reporter = Reporter.getInstance();
         if( reporter != null && reporter.isLoggedIn() ) {
             //TBD : Check if User is Verifier or Reporter
-            //OdorServer.getReport(getContext());
 
-            String url = OdorServer.serverURL+"/odor/report";
+            //Today
+            String dateTime = new SimpleDateFormat("MM-dd-yyyy").format(new Date());
+
+            String url = getString(R.string.server_base_url)+"/odor/report/"+dateTime;
+
             RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
             JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,
                     new Response.Listener<JSONArray>() {
@@ -120,6 +128,7 @@ public class MapFragment extends Fragment implements
                 }
             });
             queue.add(stringRequest);
+
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLng(milpitas));
 
@@ -146,6 +155,21 @@ public class MapFragment extends Fragment implements
             //Reporter is Verifier
             //if( Reporter.getInstance().)
             {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(report.dateTime );
+                cal.add(Calendar.MINUTE, 30);
+                Date reportedTimePlus30 = cal.getTime();
+                Date now = new Date();
+                if( now.compareTo(reportedTimePlus30) > 0 ) {
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            marker.getTitle() + " \n " +
+                                    report.odorDescription
+                                    + ( report.customDescription.length() > 0 ? "\n " + report.customDescription: "")
+                                    + ( "Can not verify : More than 30 minutes past this Report."),
+                            Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
                 Reporter verifier = Reporter.getInstance();
                 double R = 6371e3; // metres
                 double report_l_r = Math.toRadians(report.lat);
@@ -160,19 +184,18 @@ public class MapFragment extends Fragment implements
 
                 double d = R * c;
 
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 // Create and show the dialog.
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 if ( d > 100 ){
-                    YesNoDialog newFragment = new YesNoDialog ("Verifier! ",
+                    AlertDialog newFragment = new AlertDialog ("Verifier ",
                             "Do you want to verify this report? \n " +
                                     "You will have to be in same vicinity as this report to verify this report. \n" +
-                                    " Current Distance : " + d + " meters"
+                                    " Current Distance : " + (new Double(d).intValue() )+ " meters"
                     );
                     newFragment.show(ft, "dialog");
                 }else{
-                    YesNoDialog newFragment = new YesNoDialog ("Verifier! ",
-                            "Do you want to verify this report? \n " +
-                                    "You are near the reported location! Thanks for getting here in time!"
+                    YesNoDialog newFragment = new YesNoDialog ("Verifier : Thanks for being here in time! ",
+                            "Do you want to verify this report? \n "
                     );
                     newFragment.show(ft, "dialog");
                 }

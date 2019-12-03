@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,7 +36,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 
-public class HomeFragment extends Fragment implements View.OnClickListener{
+public class HomeFragment extends Fragment implements View.OnClickListener, OnActivityChangeListener{
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
@@ -46,6 +47,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     SignInButton signInButton;
     Button signOutButton;
     TextView statusView;
+
+    Button loginLogoutButton;
 
     @Nullable
     @Override
@@ -71,10 +74,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
 
         signOutButton = loginView.findViewById(R.id.sign_out_button);
         signOutButton.setOnClickListener(this);
+
         statusView = loginView.findViewById(R.id.sign_in_status_message);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        if( signOut ){
+            signOut();
+        }
         return loginView;
     }
 
@@ -108,6 +115,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         String message = "User should be signed in for reporting data";
 
 
+
         if( reporter != null && reporter.isLoggedIn() ) {
             message = "Welcome ! " + reporter.getDisplayName() +" : " + reporter.getEmailId();
             if ( reporter.isLocationAvailable() ){
@@ -119,6 +127,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
                         new OdorReportSubmissionFragment(), "OdorReportSubmissionFragment").commit();
 
             }
+            onLoginSuccessFull(getView());
             signInButton.setEnabled(false);
             signOutButton.setEnabled(true);
         }else{
@@ -204,18 +213,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private void showProgressDialog() {
     }
 
-    private void signOut() {
+    public void signOut() {
         // Firebase sign out
         mAuth.signOut();
         FirebaseAuth.getInstance().signOut();
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener(getActivity(),
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateReporterUI(null);
-                    }
-                });
+            new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    updateReporterUI(null);
+                }
+            });
     }
 
     private void revokeAccess() {
@@ -233,5 +242,41 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     }
 
 
+    //To communicate with MainActivity
+    //Ask Main Activity to implement my listener
+
+    public interface OnLoginStatusChangeListener{
+        public void onLoginItemSelected(String signal);
+    }
+
+    private OnLoginStatusChangeListener onLoginStatusChangeListener;
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+
+        if( context instanceof OnLoginStatusChangeListener){
+            onLoginStatusChangeListener = ( OnLoginStatusChangeListener )context;
+        }else{
+            throw new ClassCastException(context.toString() + "must implement OnLoginStatusChangeListener");
+        }
+    }
+
+    void onLoginSuccessFull(View view){
+        onLoginStatusChangeListener.onLoginItemSelected("login-success");
+    }
+    void onLogoutSuccessFull(View view){
+        onLoginStatusChangeListener.onLoginItemSelected("logout-success");
+    }
+
+
+    boolean signOut=false;
+    // To receive communication from MainActivity
+    public void onActivityMessage(String signal){
+        if( signal.equals("sign-out") ){
+            signOut = true;
+            Reporter.getInstance().logout();
+        }
+    }
 }
 
