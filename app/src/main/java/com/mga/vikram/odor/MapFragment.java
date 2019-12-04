@@ -117,14 +117,21 @@ public class MapFragment extends Fragment implements
 
                                 LatLng pos = new LatLng(report.lat,report.lng);
                                 MarkerOptions aMarkerOption = new MarkerOptions().position(pos).title(report.odorCategory);
-                                BitmapDescriptor bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+
+                                BitmapDescriptor bd = null;
+                                if( report.odorDescription.equals(getString(R.string.clean_air))) {
+                                    bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                                }else if( report.verified ){
+                                    bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                                }else {
+                                    bd = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                                }
                                 aMarkerOption.icon(bd);
 
                                 Marker aMarker = mMap.addMarker(aMarkerOption);
                                 aMarker.showInfoWindow();
                                 aMarker.setTag(report);
                             }
-
                         } catch (
                                 JSONException e) {
                             e.printStackTrace();

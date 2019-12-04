@@ -16,8 +16,9 @@ public class Report {
     String odorCategory;
     String odorDescription;
     String customDescription;
+    boolean verified;
 
-    public Report(Long reportId, Date dateTime, int emailHash, double lat, double lng, String odorCategory, String odorDescription, String customDescription) {
+    public Report(Long reportId, Date dateTime, int emailHash, double lat, double lng, String odorCategory, String odorDescription, String customDescription, boolean verified) {
         this.reportId = reportId;
         this.dateTime = dateTime;
         this.emailHash = emailHash;
@@ -26,6 +27,7 @@ public class Report {
         this.odorCategory = odorCategory;
         this.odorDescription = odorDescription;
         this.customDescription = customDescription;
+        this.verified = verified;
     }
 
     public static Report getReportFromJSON(JSONObject jsonReport){
@@ -45,7 +47,9 @@ public class Report {
                     jsonReport.getDouble("lng"),
                     jsonReport.getString("odorCategory"),
                     jsonReport.getString("odorDescription"),
-                    jsonReport.getString("customDescription"));
+                    jsonReport.getString("customDescription"),
+                    jsonReport.getBoolean("verified")
+            );
         } catch (JSONException e) {
             e.printStackTrace();
         }

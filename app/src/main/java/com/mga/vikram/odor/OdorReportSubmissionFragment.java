@@ -104,7 +104,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
                     isVerifiedTrue);
         }else{
             report = new Report(0L, new Date(), reporter.emailId.hashCode(),
-                    reporter.lat,reporter.lng,"", odorDescription,"");
+                    reporter.lat,reporter.lng,"", odorDescription,"", false);
         }
         //Toast.makeText(parent.getContext(), odorDescription, Toast.LENGTH_SHORT).show();
     }
