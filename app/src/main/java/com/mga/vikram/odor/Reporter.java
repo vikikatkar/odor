@@ -54,6 +54,9 @@ public class Reporter implements LocationListener {
     public String getEmailId() {
         return emailId;
     }
+    public int getEmailIdHash() {
+        return emailId.hashCode();
+    }
     public void setEmailId(String emailId) {
         this.emailId = emailId;
     }

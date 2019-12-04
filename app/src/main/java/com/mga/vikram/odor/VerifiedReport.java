@@ -19,13 +19,29 @@ public class VerifiedReport {
     String customDescription;
     boolean verified;
 
-    public VerifiedReport(Long reportId, int reporterId, int verifierId, Date dateTime, double lat, double lng, String odorCategory, String odorDescription, String customDescription, boolean verified) {
+    public VerifiedReport(Long reportId, int reporterId, int verifierId,
+                          Date dateTime,
+                          double lat, double lng,
+                          String odorCategory, String odorDescription, String customDescription, boolean verified) {
         this.reportId = reportId;
         this.reporterId = reporterId;
         this.verifierId = verifierId;
         this.dateTime = dateTime;
         this.lat = lat;
         this.lng = lng;
+        this.odorCategory = odorCategory;
+        this.odorDescription = odorDescription;
+        this.customDescription = customDescription;
+        this.verified = verified;
+    }
+    public VerifiedReport(Report report, int verifierId,
+                          String odorCategory, String odorDescription, String customDescription, boolean verified) {
+        this.reportId = report.reportId;
+        this.reporterId = report.emailHash;
+        this.verifierId = verifierId;
+        this.dateTime = report.dateTime;
+        this.lat = report.lat;
+        this.lng = report.lng;
         this.odorCategory = odorCategory;
         this.odorDescription = odorDescription;
         this.customDescription = customDescription;

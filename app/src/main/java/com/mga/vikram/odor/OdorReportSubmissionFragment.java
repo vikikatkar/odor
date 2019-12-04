@@ -34,10 +34,14 @@ import java.util.Date;
 
 public class OdorReportSubmissionFragment extends Fragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
     Report report;
+    VerifiedReport verifiedReport;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_submit_odor_report,null);
+
+        report = null;
+        verifiedReport = null;
 
         Verifier reporter = Verifier.getInstance();
         String displayName = reporter.getDisplayName();
@@ -91,10 +95,17 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
             submitReportButton.setOnClickListener(this);
         }
         Verifier reporter = Verifier.getInstance();
-        report = new Report(0L, new Date(), reporter.emailId.hashCode(),
-                reporter.lat,reporter.lng,"", odorDescription,"");
 
 
+        if( reporter.isVerifier() && reporter.getReportToVerify()!=null) {
+            boolean isVerifiedTrue = !reporter.getReportToVerify().odorDescription.equals(getString(R.string.clean_air));
+            verifiedReport = new VerifiedReport(reporter.getReportToVerify(),
+                    reporter.getEmailIdHash(),"", odorDescription,"",
+                    isVerifiedTrue);
+        }else{
+            report = new Report(0L, new Date(), reporter.emailId.hashCode(),
+                    reporter.lat,reporter.lng,"", odorDescription,"");
+        }
         //Toast.makeText(parent.getContext(), odorDescription, Toast.LENGTH_SHORT).show();
     }
 
@@ -112,62 +123,64 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
         RequestQueue queue = Volley.newRequestQueue(getView().getContext());
         JsonObjectRequest stringRequest;
 
-
         if( reporter.isVerifier() && reporter.getReportToVerify()!=null) {
             url+="odor/verify";
-            stringRequest = new JsonObjectRequest(Request.Method.POST, url, reporter.getReportToVerify().getJSONObject(),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.i("Odor-Server", " Response :  " + response);
 
-                            Verifier reporter = Verifier.getInstance();
-                            String displayName = reporter.getDisplayName();
 
-                            Toast.makeText(getView().getContext(), displayName + "\n Thank you for Verigying Odor Report!" +
-                                            "\n You are helping Milpitas community in understanding odor cause!"
-                                    , Toast.LENGTH_LONG).show();
+            stringRequest = new JsonObjectRequest(Request.Method.POST, url, verifiedReport.getJSONObject(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("Odor-Server", " Response :  " + response);
 
-                            //Resetting View
-                            Button submitReportButton = getView().findViewById(R.id.submitReportButton);
-                            submitReportButton.setClickable(false);
-                            submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-                            submitReportButton.setText("Report");
-                            TextView reportedTextView = getView().findViewById(R.id.reportedTextView);
-                            reportedTextView.setText("");//Blank it
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("Odor-Server", "Error on request : "+error.getMessage());
-                        }
-                    });
+                        Verifier reporter = Verifier.getInstance();
+                        String displayName = reporter.getDisplayName();
+
+                        Toast.makeText(getView().getContext(), displayName + "\n Thank you for Verigying Odor Report!" +
+                                        "\n You are helping Milpitas community in understanding odor cause!"
+                                , Toast.LENGTH_LONG).show();
+
+                        //Resetting View
+                        Button submitReportButton = getView().findViewById(R.id.submitReportButton);
+                        submitReportButton.setClickable(false);
+                        submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+                        submitReportButton.setText("Report");
+                        TextView reportedTextView = getView().findViewById(R.id.reportedTextView);
+                        reportedTextView.setText("");//Blank it
+                        reporter.verifyReport(null);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Odor-Server", "Error on request : "+error.getMessage());
+                    }
+                });
         }else{
             url+="odor/report";
             stringRequest = new JsonObjectRequest(Request.Method.POST, url, report.getJSONObject(),
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.i("Odor-Server", " Response :  " + response);
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i("Odor-Server", " Response :  " + response);
 
-                            Verifier reporter = Verifier.getInstance();
-                            String displayName = reporter.getDisplayName();
+                        Verifier reporter = Verifier.getInstance();
+                        String displayName = reporter.getDisplayName();
 
-                            Toast.makeText(getView().getContext(), displayName + "\n Thank you for Reporting Odor!" +
-                                            "\n You are helping Milpitas community in understanding odor cause!"
-                                    , Toast.LENGTH_LONG).show();
-                            Button submitReportButton = getView().findViewById(R.id.submitReportButton);
-                            submitReportButton.setClickable(false);
-                            submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("Odor-Server", "Error on request : "+error.getMessage());
-                        }
-                    });
+                        Toast.makeText(getView().getContext(), displayName + "\n Thank you for Reporting Odor!" +
+                                        "\n You are helping Milpitas community in understanding odor cause!"
+                                , Toast.LENGTH_LONG).show();
+                        Button submitReportButton = getView().findViewById(R.id.submitReportButton);
+                        submitReportButton.setClickable(false);
+                        submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Odor-Server", "Error on request : "+error.getMessage());
+                    }
+                });
         }
 
 

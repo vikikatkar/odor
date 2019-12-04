@@ -99,7 +99,7 @@ public class MapFragment extends Fragment implements
 
         String dateTime = new SimpleDateFormat("MM-dd-yyyy").format(requestDate);
 
-        String url = getString(R.string.server_base_url)+"/odor/report/"+dateTime;
+        String url = getString(R.string.server_base_url)+"/odor/reports/search/date/"+dateTime;
 
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         JsonArrayRequest stringRequest = new JsonArrayRequest(Request.Method.GET, url, null,

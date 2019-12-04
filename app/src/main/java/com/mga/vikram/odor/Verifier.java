@@ -19,6 +19,9 @@ public class Verifier extends Reporter {
     public void enableVerifier(){
         isVerifier = true;
     }
+    public void disableVerifier(){
+        isVerifier = false;
+    }
 
     public boolean isVerifier(){
         return isVerifier;

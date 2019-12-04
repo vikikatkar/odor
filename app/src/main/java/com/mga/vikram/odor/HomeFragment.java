@@ -148,10 +148,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
             }
             onLoginSuccessFull(getView());
             signInButton.setEnabled(false);
-  //          signOutButton.setEnabled(true);
         }else{
             signInButton.setEnabled(true);
-//            signOutButton.setEnabled(false);
         }
 
         statusView.setText(message);
@@ -162,7 +160,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
         if( ! reporter.isLoggedIn() ){
             return;
         }
-        String url = getString(R.string.server_base_url)+"/odor/verifier/"+reporter.getEmailId().hashCode();
+        String url = getString(R.string.server_base_url)+"/odor/verifier/check/"+reporter.getEmailId().hashCode();
 
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -175,6 +173,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, OnAc
                             Log.i("checkIfVerifier: "," Success");
                         }else{
                             Log.i("checkIfVerifier:" ," Not a verifier");
+                            Verifier verifier = Verifier.getInstance();
+                            verifier.disableVerifier();
                         }
                     }
                 }, new Response.ErrorListener() {
