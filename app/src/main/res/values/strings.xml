@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">odor</string>
-    <string name="title_home">Home</string>
+    <string name="app_name">Odor</string>
+    <string name="title_home">Report Odor</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_notifications">Odor Map</string>
     <string name="title_activity_maps">Map</string>
     <string name="server_base_url">http://192.168.0.109:8080/</string>
     <string name="clean_air">Clean Air</string>
