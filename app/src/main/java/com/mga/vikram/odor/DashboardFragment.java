@@ -1,6 +1,8 @@
 package com.mga.vikram.odor;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +26,13 @@ public class DashboardFragment extends Fragment{
         String displayName = reporter.getDisplayName();
         TextView mTextMessage;
         mTextMessage = view.findViewById(R.id.message);
-        /*if ( reporter.isLocationAvailable() ){
-            displayName += " : Location : " + reporter.getLat() + " : " + reporter.getLng();
-        }*/
-        mTextMessage.setText(displayName==null? "Not yet signed in!": displayName);
 
+        String htmlText = displayName==null? "<h2>Not Signed In yet</h2>" : "<h2>"+displayName+"</h2><br><p>Welcome!</p>";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mTextMessage.setText(Html.fromHtml(htmlText, Html.FROM_HTML_MODE_COMPACT));
+        } else {
+            mTextMessage.setText(Html.fromHtml(htmlText));
+        }
         return view;
     }
 }
