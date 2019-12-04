@@ -8,7 +8,7 @@
     <string name="clean_air">Clean Air</string>
 
     <string-array name="odors">
-        <item>---Please Select an Odor here ---</item>
+        <item>-Please Select an Odor-</item>
         <item>Clean Air</item>
         <item>Pungent</item>
         <item>Irritating</item>

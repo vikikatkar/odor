@@ -44,14 +44,18 @@
 
         <Spinner
             android:id="@+id/odorSpinner"
-            android:layout_width="388dp"
-            android:layout_height="155dp"
-            android:spinnerMode="dialog"
+            android:layout_width="351dp"
+            android:layout_height="79dp"
+            android:background="#00A57272"
+            android:spinnerMode="dropdown"
+            android:textAlignment="center"
+
             app:layout_constraintBottom_toTopOf="@+id/submitReportButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.478"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            app:layout_constraintVertical_bias="0.493" />
 
         <Button
             android:id="@+id/submitReportButton"

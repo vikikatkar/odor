@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,9 +51,8 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
 
         ArrayAdapter<CharSequence> odorAdapter = ArrayAdapter.createFromResource(getContext(),
                             R.array.odors,
-                            android.R.layout.simple_spinner_dropdown_item);
-
-        odorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            R.layout.spinner_textview);
+        odorAdapter.setDropDownViewResource(R.layout.spinner_textview);
 
         spinner.setAdapter(odorAdapter);
 

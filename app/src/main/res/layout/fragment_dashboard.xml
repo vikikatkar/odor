@@ -12,5 +12,4 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:id="@+id/message"/>
 
-
 </RelativeLayout>
