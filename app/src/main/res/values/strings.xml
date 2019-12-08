@@ -4,7 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Odor Map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="server_base_url">http://192.168.0.109:8080/</string>
+    <string name="server_base_url">http://10.155.144.71:8080/</string>
     <string name="clean_air">Clean Air</string>
 
     <string-array name="odors">

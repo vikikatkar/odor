@@ -3,6 +3,7 @@ package com.mga.vikram.odor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ import java.util.Date;
 public class OdorReportSubmissionFragment extends Fragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
     Report report;
     VerifiedReport verifiedReport;
+    private Spinner spinner;
+    private Handler handler;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,7 +50,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
         Verifier reporter = Verifier.getInstance();
         String displayName = reporter.getDisplayName();
 
-        Spinner spinner = view.findViewById(R.id.odorSpinner);
+        spinner = view.findViewById(R.id.odorSpinner);
 
         ArrayAdapter<CharSequence> odorAdapter = ArrayAdapter.createFromResource(getContext(),
                             R.array.odors,
@@ -57,6 +60,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
         spinner.setAdapter(odorAdapter);
 
         spinner.setOnItemSelectedListener(this);
+
 
         TextView reportedTextView = view.findViewById(R.id.reportedTextView);
 
@@ -77,6 +81,34 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
         submitReportButton.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY);
 
         return view;
+    }
+
+    private boolean userLooking;
+    @Override
+    public void onStart() {
+        super.onStart();
+        userLooking = true;
+        //To Open Spinner automatically
+        handler = new Handler();
+        new Thread(new Runnable() {
+            public void run() {
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        // Open the Spinner...
+                        if( userLooking ) {
+                            spinner.performClick();
+                            userLooking = false;
+                        }
+                  }
+                }, 2000);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        userLooking = false;
     }
 
     @Override
@@ -113,6 +145,7 @@ public class OdorReportSubmissionFragment extends Fragment implements AdapterVie
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
 
     @Override
     public void onClick(View v) {
